@@ -25,7 +25,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var mMap: GoogleMap
+    private lateinit var mainMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private lateinit var currentLocation:LatLng
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -90,7 +90,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+            .findFragmentById(R.id.mapFragment) as SupportMapFragment
 
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -106,7 +106,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
+        mainMap = googleMap
 
         /*  // Add a marker in Sydney and move the camera
           val sydney = LatLng(36.0, 140.0)
@@ -122,7 +122,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
         // 位置情報を有効にする
-        mMap.isMyLocationEnabled = true
+        mainMap.isMyLocationEnabled = true
 
         //現在位置を取得する
         fusedLocationClient.lastLocation
