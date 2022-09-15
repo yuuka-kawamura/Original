@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -24,8 +25,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mainMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
-    private lateinit var currentLocation:LatLng
+    private lateinit var currentLocation: LatLng
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    val hand = Handler()
+    val rnb: Runnable = object : Runnable {
+        override fun run() {
+            //一定周期で行いたいことを書く
+
+            if (isPermissionGranted()) {
+                enableMyLocation()
+            }
+            hand.postDelayed(this,10000)
+        }
+
+
+    }
 
     // ユーザーがパーミッションダイアログを操作した時
     @RequiresApi(Build.VERSION_CODES.N)
@@ -91,6 +105,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        hand.post(rnb)
 
         //一個前の緯度経度と今の緯度経度を入れる
         //Log.d("road",distance(32.1730990, 150.883466, 35.1855732, 136.899092).toString())
@@ -115,9 +130,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
           mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
 
 
-        if (isPermissionGranted()) {
-            enableMyLocation()
-        }
+      //  if (isPermissionGranted()) {
+        //    enableMyLocation()
+        //}
     }
 
     @SuppressLint("MissingPermission")
@@ -168,4 +183,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 }
+
 
