@@ -5,30 +5,41 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import app.kawamura.kawachi.original.databinding.ActivityMapsBinding
-
-import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.FusedLocationProviderClient
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var mMap: GoogleMap
+    private lateinit var mainMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
-    private lateinit var currentLocation:LatLng
+    private lateinit var currentLocation: LatLng
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    val hand = Handler()
+    val rnb: Runnable = object : Runnable {
+        override fun run() {
+            //一定周期で行いたいことを書く
+
+            if (isPermissionGranted()) {
+                enableMyLocation()
+            }
+            hand.postDelayed(this,10000)
+        }
+
+
+    }
 
     // ユーザーがパーミッションダイアログを操作した時
     @RequiresApi(Build.VERSION_CODES.N)
@@ -90,10 +101,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+            .findFragmentById(R.id.mapFragment) as SupportMapFragment
 
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        hand.post(rnb)
+
+        //一個前の緯度経度と今の緯度経度を入れる
+        //Log.d("road",distance(32.1730990, 150.883466, 35.1855732, 136.899092).toString())
+
     }
 
     /**
@@ -106,7 +122,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
+        mainMap = googleMap
 
         /*  // Add a marker in Sydney and move the camera
           val sydney = LatLng(36.0, 140.0)
@@ -114,15 +130,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
           mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
 
 
-        if (isPermissionGranted()) {
-            enableMyLocation()
-        }
+      //  if (isPermissionGranted()) {
+        //    enableMyLocation()
+        //}
     }
 
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
         // 位置情報を有効にする
-        mMap.isMyLocationEnabled = true
+        mainMap.isMyLocationEnabled = true
 
         //現在位置を取得する
         fusedLocationClient.lastLocation
@@ -139,4 +155,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
     }
 
+    // 球面三角法により、大円距離(メートル)を求める
+    fun distance(
+        lat1: Double,
+        lng1: Double,
+        lat2: Double,
+        lng2: Double
+    ): Double {
+
+        // 緯度経度をラジアンに変換
+        val rlat1 = Math.toRadians(lat1)
+        val rlng1 = Math.toRadians(lng1)
+        val rlat2 = Math.toRadians(lat2)
+        val rlng2 = Math.toRadians(lng2)
+
+        // 2点の中心角(ラジアン)を求める
+        val a = Math.sin(rlat1) * Math.sin(rlat2) +
+                Math.cos(rlat1) * Math.cos(rlat2) *
+                Math.cos(rlng1 - rlng2)
+        val rr = Math.acos(a)
+
+        // 地球赤道半径(メートル)
+        val earth_radius = 6378140.0
+
+        // 2点間の距離(メートル)
+        return earth_radius * rr
+    }
+
 }
+
+
