@@ -19,23 +19,32 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import kotlin.properties.Delegates
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mainMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
-    private lateinit var currentLocation: LatLng
+    private lateinit var currentLocation: LatLng //LatLngとは座標のこと
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    val hand = Handler()
-    val rnb: Runnable = object : Runnable {
+    private lateinit var location: Location
+    private var rearlatitude by Delegates.notNull<Double>()
+
+    val handler = Handler()
+
+    //時間ごとに繰り返す作業
+    val runnable: Runnable = object : Runnable {
         override fun run() {
             //一定周期で行いたいことを書く
 
             if (isPermissionGranted()) {
+                // rearlatitude=
                 enableMyLocation()
+                //Log.d("road",rearlatitude.toString())
+
             }
-            hand.postDelayed(this,10000)
+            handler.postDelayed(this, 10000)
         }
 
 
@@ -99,16 +108,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // ユーザーに位置情報の許可を送る
         requestPermission()
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        // SupportMapFragmentを取得してマップが使用できる状態になったときに通知を受け取ることができる
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment
 
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        hand.post(rnb)
+        handler.post(runnable)
+
+
+
 
         //一個前の緯度経度と今の緯度経度を入れる
-        //Log.d("road",distance(32.1730990, 150.883466, 35.1855732, 136.899092).toString())
+        // Log.d("road",distance(prelatitude,prelongtitude,location.latitude,location.longitude).toString())
+
+        //  prelatitude=location.latitude
+        // prelongtitude=location.longitude
 
     }
 
@@ -130,7 +145,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
           mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
 
 
-      //  if (isPermissionGranted()) {
+        //  if (isPermissionGranted()) {
         //    enableMyLocation()
         //}
     }
@@ -151,11 +166,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 currentLocation = LatLng(location.latitude, location.longitude)
                 Log.d("road", location.latitude.toString())
                 Log.d("road", location.longitude.toString())
+                //保存してたpreを使う 　if文でpreに何も入っていない時の処理も考えて書く
+
+                var prelatitude = 35.0000000
+                var prelongtitude = -115.000
+
+                distance(prelatitude,prelongtitude,location.latitude,location.longitude)
+                //計算し終わったらpreの方に移動する
+                prelatitude=location.latitude
+                prelongtitude=location.longitude
+                Log.d("road",distance(prelatitude,prelongtitude,location.latitude,location.longitude).toString())
+                Log.d("road", prelatitude.toString())
+                Log.d("road", prelongtitude.toString())
+
+                //ここでそれぞれpreを保存する作業をする
+
 
             }
+
     }
 
-    // 球面三角法により、大円距離(メートル)を求める
+    // 球面三角法により、メートルを求める
     fun distance(
         lat1: Double,
         lng1: Double,
@@ -178,8 +209,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // 地球赤道半径(メートル)
         val earth_radius = 6378140.0
 
-        // 2点間の距離(メートル)
-        return earth_radius * rr
+        // 2点間の距離(キロメートル)
+        return earth_radius * rr/1000
     }
 
 }
