@@ -2,6 +2,8 @@ package app.kawamura.kawachi.original
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
@@ -15,10 +17,12 @@ import androidx.core.content.ContextCompat
 import app.kawamura.kawachi.original.databinding.ActivityMapsBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import kotlin.properties.Delegates
 
 
@@ -29,9 +33,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var currentLocation: LatLng //LatLngとは座標のこと
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var location: Location
-    private var rearlatitude by Delegates.notNull<Double>()
+    //private var total by Delegates.notNull<Double>()
 
     val handler = Handler()
+    var total = 0.00000
 
     //時間ごとに繰り返す作業
     val runnable: Runnable = object : Runnable {
@@ -46,7 +51,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             handler.postDelayed(this, 10000)
         }
-
 
     }
 
@@ -116,15 +120,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         handler.post(runnable)
 
-
-
-
-        //一個前の緯度経度と今の緯度経度を入れる
-        // Log.d("road",distance(prelatitude,prelongtitude,location.latitude,location.longitude).toString())
-
-        //  prelatitude=location.latitude
-        // prelongtitude=location.longitude
-
     }
 
     /**
@@ -144,7 +139,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
           mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
           mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
 
-
         //  if (isPermissionGranted()) {
         //    enableMyLocation()
         //}
@@ -160,33 +154,59 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .addOnSuccessListener { location: Location? ->
                 if (location == null) return@addOnSuccessListener
 
-                // 現在の位置の変数を更新
-                //この変数から距離求める??
-
+                //現在地にカメラが移動する
                 currentLocation = LatLng(location.latitude, location.longitude)
                 Log.d("road", location.latitude.toString())
                 Log.d("road", location.longitude.toString())
-                //保存してたpreを使う 　if文でpreに何も入っていない時の処理も考えて書く
+                mainMap.addMarker(
+                    MarkerOptions().position(currentLocation).title("Marker in Current")
+                )
+                mainMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))
 
-                var prelatitude = 35.0000000
-                var prelongtitude = -115.000
+                //保存してたpreを使う 何も入っていない場合はlocation.を入れる
+                val pref: SharedPreferences =
+                    getSharedPreferences("SharedPref", MODE_PRIVATE)
+                var prelatitude = pref.getString("Latitude", location.latitude.toString())
+                var prelongtitude = pref.getString("Longitude", location.longitude.toString())
 
-                distance(prelatitude,prelongtitude,location.latitude,location.longitude)
+                if (prelatitude != null) {
+                    if (prelongtitude != null) {
+                        total += distance(
+                            prelatitude.toDouble(),
+                            prelongtitude.toDouble(),
+                            location.latitude,
+                            location.longitude
+                        )
+
+                        Log.d(
+                            "road",
+                            distance(
+                                prelatitude.toDouble(),
+                                prelongtitude.toDouble(),
+                                location.latitude,
+                                location.longitude
+                            ).toString()
+                        )
+                    }
+                }
+                binding.totalDistance.text = total.toString()
                 //計算し終わったらpreの方に移動する
-                prelatitude=location.latitude
-                prelongtitude=location.longitude
-                Log.d("road",distance(prelatitude,prelongtitude,location.latitude,location.longitude).toString())
+                prelatitude = location.latitude.toString()
+                prelongtitude = location.longitude.toString()
+
                 Log.d("road", prelatitude.toString())
                 Log.d("road", prelongtitude.toString())
 
                 //ここでそれぞれpreを保存する作業をする
-
+                val editor = pref.edit()
+                editor.putString("Latitude", prelatitude.toString())
+                editor.putString("Longitude", prelongtitude.toString())
+                editor.apply()
 
             }
-
     }
 
-    // 球面三角法により、メートルを求める
+    // 球面三角法により、キロメートルを求める
     fun distance(
         lat1: Double,
         lng1: Double,
@@ -210,9 +230,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val earth_radius = 6378140.0
 
         // 2点間の距離(キロメートル)
-        return earth_radius * rr/1000
+        return earth_radius * rr / 1000
     }
-
 }
-
-
