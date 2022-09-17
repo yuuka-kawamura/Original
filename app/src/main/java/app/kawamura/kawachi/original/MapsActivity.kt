@@ -33,6 +33,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var currentLocation: LatLng //LatLngとは座標のこと
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var location: Location
+    private lateinit var pref:SharedPreferences
     //private var total by Delegates.notNull<Double>()
 
     val handler = Handler()
@@ -164,10 +165,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 mainMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))
 
                 //保存してたpreを使う 何も入っていない場合はlocation.を入れる
-                val pref: SharedPreferences =
+                pref =
                     getSharedPreferences("SharedPref", MODE_PRIVATE)
                 var prelatitude = pref.getString("Latitude", location.latitude.toString())
                 var prelongtitude = pref.getString("Longitude", location.longitude.toString())
+                var total = pref.getString("Distance", 0.toString())
 
                 if (prelatitude != null) {
                     if (prelongtitude != null) {
@@ -201,6 +203,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 val editor = pref.edit()
                 editor.putString("Latitude", prelatitude.toString())
                 editor.putString("Longitude", prelongtitude.toString())
+                editor.putString("Distance", total.toString())
                 editor.apply()
 
             }
