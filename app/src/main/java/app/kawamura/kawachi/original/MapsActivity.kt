@@ -169,7 +169,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     getSharedPreferences("SharedPref", MODE_PRIVATE)
                 var prelatitude = pref.getString("Latitude", location.latitude.toString())
                 var prelongtitude = pref.getString("Longitude", location.longitude.toString())
-                var total = pref.getString("Distance", 0.toString())
+               var total :Double=0.000000
+               total= (pref.getString("Distance", total.toString()))!!.toDouble()
 
                 if (prelatitude != null) {
                     if (prelongtitude != null) {
