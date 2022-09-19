@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentTransaction
 import app.kawamura.kawachi.original.databinding.ActivityMapsBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -33,7 +34,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var currentLocation: LatLng //LatLngとは座標のこと
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var location: Location
-    private lateinit var pref:SharedPreferences
+    private lateinit var pref: SharedPreferences
     //private var total by Delegates.notNull<Double>()
 
     val handler = Handler()
@@ -45,10 +46,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             //一定周期で行いたいことを書く
 
             if (isPermissionGranted()) {
-                // rearlatitude=
                 enableMyLocation()
-                //Log.d("road",rearlatitude.toString())
-
             }
             handler.postDelayed(this, 10000)
         }
@@ -112,6 +110,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // ユーザーに位置情報の許可を送る
         requestPermission()
+        //保存してたpreを使う 何も入っていない場合はlocation.を入れる
+        pref = getSharedPreferences("SharedPref", MODE_PRIVATE)
+
 
         // SupportMapFragmentを取得してマップが使用できる状態になったときに通知を受け取ることができる
         val mapFragment = supportFragmentManager
@@ -120,6 +121,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         handler.post(runnable)
+
 
     }
 
@@ -162,40 +164,41 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 mainMap.addMarker(
                     MarkerOptions().position(currentLocation).title("Marker in Current")
                 )
+                //カメラの一を調整
                 mainMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))
+                //カメラのzoom機能を調整　数が大きいほどアップになる
+                mainMap.moveCamera(CameraUpdateFactory.zoomTo(13.0f))
 
-                //保存してたpreを使う 何も入っていない場合はlocation.を入れる
-                pref =
-                    getSharedPreferences("SharedPref", MODE_PRIVATE)
-                var prelatitude = pref.getString("Latitude", location.latitude.toString())
-                var prelongtitude = pref.getString("Longitude", location.longitude.toString())
-               var total :Double=0.000000
-               total= (pref.getString("Distance", total.toString()))!!.toDouble()
 
-                if (prelatitude != null) {
-                    if (prelongtitude != null) {
-                        total += distance(
+                var prelatitude = pref.getString("Latitude", "0.0")?.toDouble() ?: 0.0
+                var prelongtitude = pref.getString("Longitude", "0.0")?.toDouble() ?: 0.0
+                var total: Double = 0.000000
+                //total = (pref.getString("Distance", total.toString()))!!.toDouble()
+                total = pref.getString("Distance", "0.0")?.toDouble() ?: 0.0
+
+                if (prelatitude != null && prelongtitude != null) {
+                    total += distance(
+                        prelatitude.toDouble(),
+                        prelongtitude.toDouble(),
+                        location.latitude,
+                        location.longitude
+                    )
+
+                    Log.d(
+                        "road",
+                        distance(
                             prelatitude.toDouble(),
                             prelongtitude.toDouble(),
                             location.latitude,
                             location.longitude
-                        )
+                        ).toString()
+                    )
 
-                        Log.d(
-                            "road",
-                            distance(
-                                prelatitude.toDouble(),
-                                prelongtitude.toDouble(),
-                                location.latitude,
-                                location.longitude
-                            ).toString()
-                        )
-                    }
                 }
                 binding.totalDistance.text = total.toString()
                 //計算し終わったらpreの方に移動する
-                prelatitude = location.latitude.toString()
-                prelongtitude = location.longitude.toString()
+                prelatitude = location.latitude
+                prelongtitude = location.longitude
 
                 Log.d("road", prelatitude.toString())
                 Log.d("road", prelongtitude.toString())
@@ -206,34 +209,110 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 editor.putString("Longitude", prelongtitude.toString())
                 editor.putString("Distance", total.toString())
                 editor.apply()
-
+                calculation()
             }
     }
 
-    // 球面三角法により、キロメートルを求める
-    fun distance(
-        lat1: Double,
-        lng1: Double,
-        lat2: Double,
-        lng2: Double
-    ): Double {
+    fun calculation() {
 
-        // 緯度経度をラジアンに変換
-        val rlat1 = Math.toRadians(lat1)
-        val rlng1 = Math.toRadians(lng1)
-        val rlat2 = Math.toRadians(lat2)
-        val rlng2 = Math.toRadians(lng2)
+        when {
+            5267 <= total -> {
+                binding.placeText.text = "東京駅"
+                binding.remainText.text = (5267 - total).toString()
+            }
+            5139 <= total -> {
+                binding.placeText.text = "花貫渓谷"
+                binding.remainText.text = (5139 - total).toString()
+            }
+            4064 <= total -> {
+                binding.placeText.text = "大内宿"
+                binding.remainText.text = (4064 - total).toString()
+            }
+            3555 <= total -> {
+                binding.placeText.text = "富良野"
+                binding.remainText.text = (3555 - total).toString()
+            }
+            2735 <= total -> {
+                binding.placeText.text = "鶴の舞橋"
+                binding.remainText.text = (2735 - total).toString()
+            }
+            2141 <= total -> {
+                binding.placeText.text = "白米千枚田"
+                binding.remainText.text = (2141 - total).toString()
+            }
+            1747 <= total -> {
+                binding.placeText.text = "鷲羽山展望台"
+                binding.remainText.text = (1747 - total).toString()
+            }
+            1480 <= total -> {
+                binding.placeText.text = "河内藤園"
+                binding.remainText.text = (1480 - total).toString()
+            }
+            1111 <= total -> {
+                binding.placeText.text = "日向海岸"
+                binding.remainText.text = (1111 - total).toString()
+            }
+            681 <= total -> {
+                binding.placeText.text = "父母ヶ浜"
+                binding.remainText.text = (681 - total).toString()
+            }
+            393 <= total -> {
+                binding.placeText.text = "橋杭岩"
+                binding.remainText.text = (393 - total).toString()
+            }
+            225 <= total -> {
+                binding.placeText.text = "佐久島"
+                binding.remainText.text = (225 - total).toString()
+            }
+            0 <= total -> {
+                binding.placeText.text = "奥大井湖上駅"
+                binding.remainText.text = (0 - total).toString()
 
-        // 2点の中心角(ラジアン)を求める
-        val a = Math.sin(rlat1) * Math.sin(rlat2) +
-                Math.cos(rlat1) * Math.cos(rlat2) *
-                Math.cos(rlng1 - rlng2)
-        val rr = Math.acos(a)
+            }
+        }
 
-        // 地球赤道半径(メートル)
-        val earth_radius = 6378140.0
+            /* val targetplaceList = listOf<Place>(
+                 Place("奥大井湖上駅", 225),
+                 Place("佐久島", 393),
+                 Place("橋杭岩", 681),
+                 Place("父母ヶ浜", 1111),
+                 Place("日向海岸", 1480),
+                 Place("河内藤園", 1747),
+                 Place("鷲羽山展望台", 2141),
+                 Place("白米千枚田", 2735),
+                 Place("鶴の舞橋", 3555),
+                 Place("富良野", 4064),
+                 Place("大内宿", 5139),
+                 Place("花貫渓谷", 5267),
+                 Place("東京駅", 5447)
 
-        // 2点間の距離(キロメートル)
-        return earth_radius * rr / 1000
+             )*/
+        }
+
+        // 球面三角法により、キロメートルを求める
+        fun distance(
+            lat1: Double,
+            lng1: Double,
+            lat2: Double,
+            lng2: Double
+        ): Double {
+
+            // 緯度経度をラジアンに変換
+            val rlat1 = Math.toRadians(lat1)
+            val rlng1 = Math.toRadians(lng1)
+            val rlat2 = Math.toRadians(lat2)
+            val rlng2 = Math.toRadians(lng2)
+
+            // 2点の中心角(ラジアン)を求める
+            val a = Math.sin(rlat1) * Math.sin(rlat2) +
+                    Math.cos(rlat1) * Math.cos(rlat2) *
+                    Math.cos(rlng1 - rlng2)
+            val rr = Math.acos(a)
+
+            // 地球赤道半径(メートル)
+            val earth_radius = 6378140.0
+            var result = earth_radius * rr / 1000.0
+            // 2点間の距離(キロメートル)
+            return if (result == Double.NaN) 0.0 else result
+        }
     }
-}
