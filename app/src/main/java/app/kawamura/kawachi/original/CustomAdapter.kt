@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class CustomAdapter( private val animalList: List<Picture>): RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class CustomAdapter( private val pictureList: List<Picture>): RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val image: ImageView = view.findViewById(R.id.image_picture)
@@ -21,12 +21,18 @@ class CustomAdapter( private val animalList: List<Picture>): RecyclerView.Adapte
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val animal = animalList[position]
-        viewHolder.image.setImageResource(animal.image)
-        viewHolder.name.text = animal.name
+   override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        val picture = pictureList[position]
+        viewHolder.image.setImageResource(picture.image)
+        viewHolder.name.text = picture.name
 
     }
+   /*override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+       val picture = pictureList[position]
+       holder.binding.image.setImageResource(picture.image)
+       holder.binding.name.text = picture.name
 
-    override fun getItemCount() = animalList.size
+   }*/
+
+    override fun getItemCount() = pictureList.size
 }

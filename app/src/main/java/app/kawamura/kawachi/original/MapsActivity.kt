@@ -3,6 +3,7 @@ package app.kawamura.kawachi.original
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
@@ -121,7 +122,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         handler.post(runnable)
-
+        binding.albumButton.setOnClickListener {
+            //1.Intentを作る
+            val toAlbumActivityIntent = Intent(this, AlbumActivity::class.java)
+            //2.Intentの設定（今回はなし）
+            //3.Intentを使った画面遷移
+            startActivity(toAlbumActivityIntent)
+        }
 
     }
 
@@ -218,101 +225,101 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         when {
             5267 <= total -> {
                 binding.placeText.text = "東京駅"
-                binding.remainText.text = (5267 - total).toString()
+                binding.remainText.text = (5447 - total).toString()
             }
             5139 <= total -> {
                 binding.placeText.text = "花貫渓谷"
-                binding.remainText.text = (5139 - total).toString()
+                binding.remainText.text = (5267 - total).toString()
             }
             4064 <= total -> {
                 binding.placeText.text = "大内宿"
-                binding.remainText.text = (4064 - total).toString()
+                binding.remainText.text = (5139 - total).toString()
             }
             3555 <= total -> {
                 binding.placeText.text = "富良野"
-                binding.remainText.text = (3555 - total).toString()
+                binding.remainText.text = (4064 - total).toString()
             }
             2735 <= total -> {
                 binding.placeText.text = "鶴の舞橋"
-                binding.remainText.text = (2735 - total).toString()
+                binding.remainText.text = (3555 - total).toString()
             }
             2141 <= total -> {
                 binding.placeText.text = "白米千枚田"
-                binding.remainText.text = (2141 - total).toString()
+                binding.remainText.text = (2735 - total).toString()
             }
             1747 <= total -> {
                 binding.placeText.text = "鷲羽山展望台"
-                binding.remainText.text = (1747 - total).toString()
+                binding.remainText.text = (2141 - total).toString()
             }
             1480 <= total -> {
                 binding.placeText.text = "河内藤園"
-                binding.remainText.text = (1480 - total).toString()
+                binding.remainText.text = (1747 - total).toString()
             }
             1111 <= total -> {
                 binding.placeText.text = "日向海岸"
-                binding.remainText.text = (1111 - total).toString()
+                binding.remainText.text = (1480 - total).toString()
             }
             681 <= total -> {
                 binding.placeText.text = "父母ヶ浜"
-                binding.remainText.text = (681 - total).toString()
+                binding.remainText.text = (1111 - total).toString()
             }
             393 <= total -> {
                 binding.placeText.text = "橋杭岩"
-                binding.remainText.text = (393 - total).toString()
+                binding.remainText.text = (681 - total).toString()
             }
             225 <= total -> {
                 binding.placeText.text = "佐久島"
-                binding.remainText.text = (225 - total).toString()
+                binding.remainText.text = (393 - total).toString()
             }
             0 <= total -> {
                 binding.placeText.text = "奥大井湖上駅"
-                binding.remainText.text = (0 - total).toString()
+                binding.remainText.text = (225 - total).toString()
 
             }
         }
 
-            /* val targetplaceList = listOf<Place>(
-                 Place("奥大井湖上駅", 225),
-                 Place("佐久島", 393),
-                 Place("橋杭岩", 681),
-                 Place("父母ヶ浜", 1111),
-                 Place("日向海岸", 1480),
-                 Place("河内藤園", 1747),
-                 Place("鷲羽山展望台", 2141),
-                 Place("白米千枚田", 2735),
-                 Place("鶴の舞橋", 3555),
-                 Place("富良野", 4064),
-                 Place("大内宿", 5139),
-                 Place("花貫渓谷", 5267),
-                 Place("東京駅", 5447)
+        /* val targetplaceList = listOf<Place>(
+             Place("奥大井湖上駅", 225),
+             Place("佐久島", 393),
+             Place("橋杭岩", 681),
+             Place("父母ヶ浜", 1111),
+             Place("日向海岸", 1480),
+             Place("河内藤園", 1747),
+             Place("鷲羽山展望台", 2141),
+             Place("白米千枚田", 2735),
+             Place("鶴の舞橋", 3555),
+             Place("富良野", 4064),
+             Place("大内宿", 5139),
+             Place("花貫渓谷", 5267),
+             Place("東京駅", 5447)
 
-             )*/
-        }
-
-        // 球面三角法により、キロメートルを求める
-        fun distance(
-            lat1: Double,
-            lng1: Double,
-            lat2: Double,
-            lng2: Double
-        ): Double {
-
-            // 緯度経度をラジアンに変換
-            val rlat1 = Math.toRadians(lat1)
-            val rlng1 = Math.toRadians(lng1)
-            val rlat2 = Math.toRadians(lat2)
-            val rlng2 = Math.toRadians(lng2)
-
-            // 2点の中心角(ラジアン)を求める
-            val a = Math.sin(rlat1) * Math.sin(rlat2) +
-                    Math.cos(rlat1) * Math.cos(rlat2) *
-                    Math.cos(rlng1 - rlng2)
-            val rr = Math.acos(a)
-
-            // 地球赤道半径(メートル)
-            val earth_radius = 6378140.0
-            var result = earth_radius * rr / 1000.0
-            // 2点間の距離(キロメートル)
-            return if (result == Double.NaN) 0.0 else result
-        }
+         )*/
     }
+
+    // 球面三角法により、キロメートルを求める
+    fun distance(
+        lat1: Double,
+        lng1: Double,
+        lat2: Double,
+        lng2: Double
+    ): Double {
+
+        // 緯度経度をラジアンに変換
+        val rlat1 = Math.toRadians(lat1)
+        val rlng1 = Math.toRadians(lng1)
+        val rlat2 = Math.toRadians(lat2)
+        val rlng2 = Math.toRadians(lng2)
+
+        // 2点の中心角(ラジアン)を求める
+        val a = Math.sin(rlat1) * Math.sin(rlat2) +
+                Math.cos(rlat1) * Math.cos(rlat2) *
+                Math.cos(rlng1 - rlng2)
+        val rr = Math.acos(a)
+
+        // 地球赤道半径(メートル)
+        val earth_radius = 6378140.0
+        var result = earth_radius * rr / 1000.0
+        // 2点間の距離(キロメートル)
+        return if (result == Double.NaN) 0.0 else result
+    }
+}
