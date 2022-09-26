@@ -10,8 +10,9 @@
     tools:context=".MapsActivity"
    >
 
+
     <TextView
-        android:id="@+id/total_distance"
+        android:id="@+id/remain_text"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:elevation="2dp"
@@ -19,12 +20,12 @@
         android:text="0"
         android:textColor="#053F40"
         android:textSize="45sp"
-        map:layout_constraintBottom_toBottomOf="@+id/imageViewmini"
-        map:layout_constraintEnd_toEndOf="@+id/imageViewmini"
-        map:layout_constraintHorizontal_bias="0.45"
-        map:layout_constraintStart_toStartOf="@+id/imageViewmini"
-        map:layout_constraintTop_toTopOf="@+id/imageViewmini"
-        map:layout_constraintVertical_bias="0.4" />
+        map:layout_constraintBottom_toBottomOf="@+id/imageViewbig"
+        map:layout_constraintEnd_toEndOf="@+id/imageViewbig"
+        map:layout_constraintHorizontal_bias="0.583"
+        map:layout_constraintStart_toStartOf="@+id/imageViewbig"
+        map:layout_constraintTop_toTopOf="@+id/imageViewbig"
+        map:layout_constraintVertical_bias="0.691" />
 
     <TextView
         android:id="@+id/place_text"
@@ -35,11 +36,10 @@
         android:textColor="#053F40"
         android:textSize="45sp"
         map:layout_constraintBottom_toTopOf="@+id/remain_text"
-        map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.27"
-        map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toTopOf="parent"
-        map:layout_constraintVertical_bias="0.823" />
+        map:layout_constraintEnd_toStartOf="@+id/textView2"
+        map:layout_constraintStart_toStartOf="@+id/imageViewbig"
+        map:layout_constraintTop_toTopOf="@+id/imageViewbig"
+        map:layout_constraintVertical_bias="0.541" />
 
     <TextView
         android:id="@+id/textView2"
@@ -52,10 +52,8 @@
         android:textSize="30sp"
         map:layout_constraintBottom_toBottomOf="@+id/imageViewbig"
         map:layout_constraintEnd_toEndOf="@+id/imageViewbig"
-        map:layout_constraintHorizontal_bias="0.708"
-        map:layout_constraintStart_toEndOf="@+id/place_text"
         map:layout_constraintTop_toTopOf="@+id/imageViewbig"
-        map:layout_constraintVertical_bias="0.347" />
+        map:layout_constraintVertical_bias="0.309" />
 
     <TextView
         android:id="@+id/textView3"
@@ -68,10 +66,10 @@
         android:textSize="30sp"
         map:layout_constraintBottom_toBottomOf="@+id/imageViewbig"
         map:layout_constraintEnd_toStartOf="@+id/remain_text"
-        map:layout_constraintHorizontal_bias="0.529"
+        map:layout_constraintHorizontal_bias="0.533"
         map:layout_constraintStart_toStartOf="@+id/imageViewbig"
         map:layout_constraintTop_toTopOf="@+id/imageViewbig"
-        map:layout_constraintVertical_bias="0.705" />
+        map:layout_constraintVertical_bias="0.701" />
 
     <TextView
         android:id="@+id/textView5"
@@ -84,10 +82,10 @@
         android:textSize="30sp"
         map:layout_constraintBottom_toBottomOf="@+id/imageViewbig"
         map:layout_constraintEnd_toEndOf="@+id/imageViewbig"
-        map:layout_constraintHorizontal_bias="0.465"
+        map:layout_constraintHorizontal_bias="0.46"
         map:layout_constraintStart_toEndOf="@+id/remain_text"
         map:layout_constraintTop_toTopOf="@+id/imageViewbig"
-        map:layout_constraintVertical_bias="0.7" />
+        map:layout_constraintVertical_bias="0.708" />
 
     <TextView
         android:id="@+id/textView4"
@@ -104,22 +102,6 @@
         map:layout_constraintTop_toTopOf="@+id/imageViewmini" />
 
     <TextView
-        android:id="@+id/remain_text"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:elevation="2dp"
-        android:fontFamily="sans-serif-black"
-        android:text="0"
-        android:textColor="#053F40"
-        android:textSize="45sp"
-        map:layout_constraintBottom_toTopOf="@+id/imageViewmini"
-        map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.581"
-        map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toTopOf="parent"
-        map:layout_constraintVertical_bias="0.576" />
-
-    <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -133,6 +115,22 @@
         map:layout_constraintEnd_toEndOf="@+id/imageViewmini"
         map:layout_constraintHorizontal_bias="0.094"
         map:layout_constraintStart_toStartOf="@+id/imageViewmini" />
+
+    <TextView
+        android:id="@+id/total_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:elevation="2dp"
+        android:fontFamily="sans-serif-black"
+        android:text="0"
+        android:textColor="#053F40"
+        android:textSize="45sp"
+        map:layout_constraintBottom_toBottomOf="@+id/imageViewmini"
+        map:layout_constraintEnd_toEndOf="@+id/imageViewmini"
+        map:layout_constraintHorizontal_bias="0.45"
+        map:layout_constraintStart_toStartOf="@+id/imageViewmini"
+        map:layout_constraintTop_toTopOf="@+id/imageViewmini"
+        map:layout_constraintVertical_bias="0.4" />
 
     <fragment
         android:id="@+id/mapFragment"
@@ -157,26 +155,50 @@
         map:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
-        android:id="@+id/imageViewbig"
+        android:id="@+id/imageViewmini"
+        android:layout_width="339dp"
+        android:layout_height="100dp"
+        map:layout_constraintBottom_toBottomOf="@+id/imageViewbig2"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toBottomOf="@+id/imageViewbig"
+        map:layout_constraintVertical_bias="0.339"
+        map:srcCompat="@drawable/ffffffmini" />
+
+    <ImageView
+        android:id="@+id/imageViewbig2"
         android:layout_width="350dp"
         android:layout_height="280dp"
-        map:layout_constraintBottom_toTopOf="@+id/imageViewmini"
+        android:layout_marginTop="36dp"
+        map:layout_constraintBottom_toBottomOf="@+id/album_button"
         map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.491"
+        map:layout_constraintHorizontal_bias="0.508"
         map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toBottomOf="@+id/mapFragment"
-        map:layout_constraintVertical_bias="0.48"
+        map:layout_constraintTop_toBottomOf="@+id/imageViewbig"
         map:srcCompat="@drawable/ffffff" />
 
     <ImageView
-        android:id="@+id/imageViewmini"
+        android:id="@+id/imageViewbig"
         android:layout_width="350dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="168dp"
-        map:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="280dp"
+        android:layout_marginTop="32dp"
         map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.491"
+        map:layout_constraintHorizontal_bias="0.508"
         map:layout_constraintStart_toStartOf="parent"
-        map:srcCompat="@drawable/ffffffmini" />
+        map:layout_constraintTop_toTopOf="parent"
+        map:srcCompat="@drawable/ffffff" />
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/bar_chart"
+        android:layout_width="350dp"
+        android:layout_height="200dp"
+        map:layout_constraintBottom_toBottomOf="@+id/imageViewbig2"
+        map:layout_constraintEnd_toEndOf="@+id/imageViewbig2"
+        map:layout_constraintHorizontal_bias="0.0"
+        map:layout_constraintStart_toStartOf="@+id/imageViewbig2"
+        map:layout_constraintTop_toBottomOf="@+id/imageViewmini"
+        map:layout_constraintVertical_bias="1.0">
+
+    </com.github.mikephil.charting.charts.BarChart>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,19 +19,19 @@ class AlbumActivity : AppCompatActivity() {
         var total = pref.getString("Distance", "0.0")?.toDouble() ?: 0.0
 
         var one=R.drawable.tokyo
-        var two=R.drawable.okuooi
-        var three=R.drawable.hananuki
-        var four=R.drawable.hananuki
-        var five=R.drawable.hananuki
-        var six=R.drawable.hananuki
-        var seven=R.drawable.hananuki
-        var eight=R.drawable.hananuki
-        var nine=R.drawable.hananuki
-        var ten=R.drawable.hananuki
-        var eleven=R.drawable.hananuki
-        var twelve=R.drawable.hananuki
-        var thirteen=R.drawable.hananuki
-        var fourteen=R.drawable.hananuki
+        var two=R.drawable.one
+        var three=R.drawable.two
+        var four=R.drawable.three
+        var five=R.drawable.four
+        var six=R.drawable.five
+        var seven=R.drawable.six
+        var eight=R.drawable.seven
+        var nine=R.drawable.eight
+        var ten=R.drawable.nine
+        var eleven=R.drawable.ten
+        var twelve=R.drawable.eleven
+        var thirteen=R.drawable.twelve
+        var fourteen=R.drawable.thirteen
 
         if(0<=total)
             one=R.drawable.tokyostation
@@ -52,15 +52,15 @@ class AlbumActivity : AppCompatActivity() {
         if(2735<=total)
             one=R.drawable.hakumai
         if(3555<=total)
-            one=R.drawable.titihaha
+            one=R.drawable.turu
         if(4064<=total)
-            one=R.drawable.titihaha
+            one=R.drawable.hurano
         if(5139<=total)
-            one=R.drawable.titihaha
+            one=R.drawable.oouchi
         if(5267<=total)
-            one=R.drawable.titihaha
+            one=R.drawable.hananuki
         if(5447<=total)
-            one=R.drawable.titihaha
+            one=R.drawable.tizucamera
 
 
 

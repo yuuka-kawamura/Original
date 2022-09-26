@@ -2,10 +2,10 @@ package app.kawamura.kawachi.original
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
@@ -15,8 +15,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentTransaction
 import app.kawamura.kawachi.original.databinding.ActivityMapsBinding
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,7 +29,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import kotlin.properties.Delegates
+import java.time.LocalDate
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -36,6 +40,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var location: Location
     private lateinit var pref: SharedPreferences
+    var totaltoday: Double = 0.000000
+    var total1: Double = 0.000000
+    var total2: Double = 0.000000
+    var total3: Double = 0.000000
+    var total4: Double = 0.000000
+    var total5: Double = 0.000000
+    var total6: Double = 0.000000
+
     //private var total by Delegates.notNull<Double>()
 
     val handler = Handler()
@@ -130,6 +142,48 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             startActivity(toAlbumActivityIntent)
         }
 
+        var date = "2022,10,1"
+        totaltoday = pref.getString("total0", "0.0")?.toDouble() ?: 0.0
+        total1 = pref.getString("total1", "0.0")?.toDouble() ?: 0.0
+        total2 = pref.getString("total2", "0.0")?.toDouble() ?: 0.0
+        total3 = pref.getString("total3", "0.0")?.toDouble() ?: 0.0
+        total4 = pref.getString("total4", "0.0")?.toDouble() ?: 0.0
+        total5 = pref.getString("total5", "0.0")?.toDouble() ?: 0.0
+        total6 = pref.getString("total6", "0.0")?.toDouble() ?: 0.0
+        date = pref.getString("date", "").toString()
+
+        if (date != LocalDate.now().toString()) {
+            total6 = total5
+            total5 = total4
+            total4 = total3
+            total3 = total2
+            total2 = total1
+            total1 = totaltoday
+            totaltoday = 0.0
+        }
+
+        //chartのコンポーネントを取得
+        val chart: BarChart = findViewById(R.id.bar_chart);
+
+        //グラフのデータを設定
+        val value1: ArrayList<BarEntry> = ArrayList()
+        value1.add(BarEntry(0F, total6.toFloat()))
+        value1.add(BarEntry(1F, total5.toFloat()))
+        value1.add(BarEntry(2F, total4.toFloat()))
+        value1.add(BarEntry(3F, total3.toFloat()))
+        value1.add(BarEntry(4F, total2.toFloat()))
+        value1.add(BarEntry(5F, total1.toFloat()))
+        value1.add(BarEntry(6F, totaltoday.toFloat()))
+
+        //chartに設定
+        val dataSet1 = BarDataSet(value1, "総距離")
+        dataSet1.color = R.color.sub
+
+        val dataSets: MutableList<IBarDataSet> = ArrayList()
+        dataSets.add(dataSet1)
+
+        chart.data = BarData(dataSets)
+        chart.invalidate() // refresh
     }
 
     /**
@@ -180,11 +234,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 var prelatitude = pref.getString("Latitude", "0.0")?.toDouble() ?: 0.0
                 var prelongtitude = pref.getString("Longitude", "0.0")?.toDouble() ?: 0.0
                 var total: Double = 0.000000
+
                 //total = (pref.getString("Distance", total.toString()))!!.toDouble()
                 total = pref.getString("Distance", "0.0")?.toDouble() ?: 0.0
 
                 if (prelatitude != null && prelongtitude != null) {
                     total += distance(
+                        prelatitude.toDouble(),
+                        prelongtitude.toDouble(),
+                        location.latitude,
+                        location.longitude
+                    )
+                    totaltoday += distance(
                         prelatitude.toDouble(),
                         prelongtitude.toDouble(),
                         location.latitude,
@@ -215,6 +276,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 editor.putString("Latitude", prelatitude.toString())
                 editor.putString("Longitude", prelongtitude.toString())
                 editor.putString("Distance", total.toString())
+                editor.putString("total0", totaltoday.toString())
+                editor.putString("total1", total1.toString())
+                editor.putString("total2", total2.toString())
+                editor.putString("total3", total3.toString())
+                editor.putString("total4", total4.toString())
+                editor.putString("total5", total5.toString())
+                editor.putString("total6", total6.toString())
+                editor.putString("date", LocalDate.now().toString())
                 editor.apply()
                 calculation()
             }
