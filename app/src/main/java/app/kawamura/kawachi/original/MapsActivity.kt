@@ -30,6 +30,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import java.time.LocalDate
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -126,14 +128,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         //保存してたpreを使う 何も入っていない場合はlocation.を入れる
         pref = getSharedPreferences("SharedPref", MODE_PRIVATE)
 
-
         // SupportMapFragmentを取得してマップが使用できる状態になったときに通知を受け取ることができる
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment
 
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        handler.post(runnable)
+
         binding.albumButton.setOnClickListener {
             //1.Intentを作る
             val toAlbumActivityIntent = Intent(this, AlbumActivity::class.java)
@@ -163,7 +164,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         //chartのコンポーネントを取得
-        val chart: BarChart = findViewById(R.id.bar_chart);
+        val chart: BarChart = findViewById(R.id.bar_chart)
 
         //グラフのデータを設定
         val value1: ArrayList<BarEntry> = ArrayList()
@@ -184,6 +185,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         chart.data = BarData(dataSets)
         chart.invalidate() // refresh
+
+        //BackgroundServiceへ
+        val intent = Intent(application, BackgroundService::class.java)
+        startService(intent)
+
+        handler.post(runnable)
     }
 
     /**
@@ -198,14 +205,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mainMap = googleMap
 
-        /*  // Add a marker in Sydney and move the camera
-          val sydney = LatLng(36.0, 140.0)
-          mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-          mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
-
-        //  if (isPermissionGranted()) {
-        //    enableMyLocation()
-        //}
     }
 
     @SuppressLint("MissingPermission")
@@ -219,20 +218,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (location == null) return@addOnSuccessListener
 
                 //現在地にカメラが移動する
-                currentLocation = LatLng(location.latitude, location.longitude)
-                Log.d("road", location.latitude.toString())
-                Log.d("road", location.longitude.toString())
-                mainMap.addMarker(
-                    MarkerOptions().position(currentLocation).title("Marker in Current")
-                )
-                //カメラの一を調整
-                mainMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))
-                //カメラのzoom機能を調整　数が大きいほどアップになる
-                mainMap.moveCamera(CameraUpdateFactory.zoomTo(13.0f))
+                /* currentLocation = LatLng(location.latitude, location.longitude)
+                 Log.d("road", location.latitude.toString())
+                 Log.d("road", location.longitude.toString())
+                 mainMap.addMarker(
+                     MarkerOptions().position(currentLocation).title("Marker in Current")
+                 )
+                 //カメラの一を調整
+                 mainMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))
+                 //カメラのzoom機能を調整　数が大きいほどアップになる
+                 mainMap.moveCamera(CameraUpdateFactory.zoomTo(13.0f))*/
 
 
-                var prelatitude = pref.getString("Latitude", "0.0")?.toDouble() ?: 0.0
-                var prelongtitude = pref.getString("Longitude", "0.0")?.toDouble() ?: 0.0
+                var prelatitude =
+                    pref.getString("Latitude", location.latitude.toString())?.toDouble() ?: 0.0
+                var prelongtitude =
+                    pref.getString("Longitude", location.longitude.toString())?.toDouble() ?: 0.0
                 var total: Double = 0.000000
 
                 //total = (pref.getString("Distance", total.toString()))!!.toDouble()
@@ -254,7 +255,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     Log.d(
                         "road",
-                        distance(
+                        "distance" + distance(
                             prelatitude.toDouble(),
                             prelongtitude.toDouble(),
                             location.latitude,
@@ -263,7 +264,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     )
 
                 }
-                binding.totalDistance.text = total.toString()
+
+                binding.totalDistance.text = String.format("%.2f", total)
+                //total.toFloat().toString()
                 //計算し終わったらpreの方に移動する
                 prelatitude = location.latitude
                 prelongtitude = location.longitude

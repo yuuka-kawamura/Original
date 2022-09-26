@@ -5,6 +5,8 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -17,9 +19,12 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:targetApi="31">
         <service
-            android:name=".TestService"
+            android:name=".BackgroundService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"
+            android:taskAffinity=""
+            android:foregroundServiceType="location"
+            android:excludeFromRecents="true"></service>
 
         <activity
             android:name=".AlbumActivity"

@@ -36,34 +36,31 @@ class AlbumActivity : AppCompatActivity() {
         if(0<=total)
             one=R.drawable.tokyostation
         if(225<=total)
-            one=R.drawable.okuooi
+            two=R.drawable.okuooi
         if(393<=total)
-            one=R.drawable.sakusima
+            three=R.drawable.sakusima
         if(681<=total)
-            one=R.drawable.hasikuiiwa
+            four=R.drawable.hasikuiiwa
         if(1111<=total)
-            one=R.drawable.titihaha
+            five=R.drawable.titihaha
         if(1480<=total)
-            one=R.drawable.hinata
+            six=R.drawable.hinata
         if(1747<=total)
-            one=R.drawable.kawauchi
+            seven=R.drawable.kawauchi
         if(2141<=total)
-            one=R.drawable.wasiu
+            eight=R.drawable.wasiu
         if(2735<=total)
-            one=R.drawable.hakumai
+            nine=R.drawable.hakumai
         if(3555<=total)
-            one=R.drawable.turu
+            ten=R.drawable.turu
         if(4064<=total)
-            one=R.drawable.hurano
+            eleven=R.drawable.hurano
         if(5139<=total)
-            one=R.drawable.oouchi
+            twelve=R.drawable.oouchi
         if(5267<=total)
-            one=R.drawable.hananuki
+            thirteen=R.drawable.hananuki
         if(5447<=total)
-            one=R.drawable.tizucamera
-
-
-
+            fourteen=R.drawable.tizucamera
 
         val pictureList = listOf<Picture>(
             Picture(one, "東京駅"),
@@ -82,12 +79,6 @@ class AlbumActivity : AppCompatActivity() {
             Picture(fourteen, "日本一周")
 
         )
-
-
-        /*
-        if(225<=total)
-            one=R.drawable.tokyo
-        */
 
         binding.recyclerView.adapter = CustomAdapter(pictureList)
 
