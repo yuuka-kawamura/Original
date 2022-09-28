@@ -62,6 +62,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             if (isPermissionGranted()) {
                 enableMyLocation()
+               // calculation()
             }
             handler.postDelayed(this, 10000)
         }
@@ -120,8 +121,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMapsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+       binding=ActivityMapsBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // ユーザーに位置情報の許可を送る
         requestPermission()
@@ -191,6 +191,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         startService(intent)
 
         handler.post(runnable)
+
     }
 
     /**
@@ -239,6 +240,61 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 //total = (pref.getString("Distance", total.toString()))!!.toDouble()
                 total = pref.getString("Distance", "0.0")?.toDouble() ?: 0.0
 
+                when {
+                    5267 <= total -> {
+                        binding.placeText.text = "東京駅"
+                        binding.remainText.text =String.format("%.2f", 5447-total)
+                    }
+                    5139 <= total -> {
+                        binding.placeText.text = "花貫渓谷"
+                        binding.remainText.text = String.format("%.2f", 5267-total)
+                    }
+                    4064 <= total -> {
+                        binding.placeText.text = "大内宿"
+                        binding.remainText.text = String.format("%.2f", 5139-total)
+                    }
+                    3555 <= total -> {
+                        binding.placeText.text = "富良野"
+                        binding.remainText.text = String.format("%.2f", 4064-total)
+                    }
+                    2735 <= total -> {
+                        binding.placeText.text = "鶴の舞橋"
+                        binding.remainText.text = String.format("%.2f", 3555-total)
+                    }
+                    2141 <= total -> {
+                        binding.placeText.text = "白米千枚田"
+                        binding.remainText.text = String.format("%.2f", 2735-total)
+                    }
+                    1747 <= total -> {
+                        binding.placeText.text = "鷲羽山展望台"
+                        binding.remainText.text = String.format("%.2f", 2141-total)
+                    }
+                    1480 <= total -> {
+                        binding.placeText.text = "河内藤園"
+                        binding.remainText.text =String.format("%.2f", 1747-total)
+                    }
+                    1111 <= total -> {
+                        binding.placeText.text = "日向海岸"
+                        binding.remainText.text = String.format("%.2f", 1480-total)
+                    }
+                    681 <= total -> {
+                        binding.placeText.text = "父母ヶ浜"
+                        binding.remainText.text = String.format("%.2f", 1111-total)
+                    }
+                    393 <= total -> {
+                        binding.placeText.text = "橋杭岩"
+                        binding.remainText.text = String.format("%.2f", 681-total)
+                    }
+                    225 <= total -> {
+                        binding.placeText.text = "佐久島"
+                        binding.remainText.text = String.format("%.2f",393-total)
+                    }
+                    0 <= total -> {
+                        binding.placeText.text = "奥大井湖上駅"
+                        binding.remainText.text =String.format("%.2f", 225-total)
+
+                    }
+                }
                 if (prelatitude != null && prelongtitude != null) {
                     total += distance(
                         prelatitude.toDouble(),
@@ -288,11 +344,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 editor.putString("total6", total6.toString())
                 editor.putString("date", LocalDate.now().toString())
                 editor.apply()
-                calculation()
+
             }
     }
 
-    fun calculation() {
+   /* private fun calculation() {
 
         when {
             5267 <= total -> {
@@ -345,10 +401,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             0 <= total -> {
                 binding.placeText.text = "奥大井湖上駅"
-                binding.remainText.text = (225 - total).toString()
-
+                var a:Double= 225.0
+                var b=a-total
+                binding.remainText.text = b.toString()
+Log.d("road","total"+total.toString())
+Log.d("road","距離"+b)
             }
-        }
+        }*/
 
         /* val targetplaceList = listOf<Place>(
              Place("奥大井湖上駅", 225),
@@ -394,4 +453,3 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // 2点間の距離(キロメートル)
         return if (result == Double.NaN) 0.0 else result
     }
-}
